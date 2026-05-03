@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TERNOS DE GRUPO MÁGICOS DO GUINHO</title>
     <style>
-        /* Estilização: Fundo Roxo com Rosa */
+        /* Estilização: Fundo Roxo com Rosa e Simetria */
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
             background: linear-gradient(135deg, #4b0082, #ff69b4);
@@ -53,22 +53,33 @@
             padding: 8px;
         }
 
+        /* Estrutura de Botões Simétricos */
+        .button-group {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
         .btn {
             border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
+            padding: 15px;
+            border-radius: 10px;
             font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
+            flex: 1; /* Garante que ambos tenham o mesmo tamanho */
+            font-size: 14px;
         }
-        .btn-share { background-color: #25d366; color: white; width: 100%; }
-        .btn-check { background-color: #4b0082; color: white; width: 100%; }
+
+        .btn-share { background-color: #25d366; color: white; margin-bottom: 5px; flex: none; width: 100%; }
+        .btn-check { background-color: #4b0082; color: white; }
+        .btn-clear { background-color: #ff1493; color: white; } /* Rosa Choque para o Limpar */
 
         .grid-ternos {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
             gap: 10px;
-            max-height: 400px;
+            max-height: 350px;
             overflow-y: auto;
             padding: 5px;
         }
@@ -79,12 +90,11 @@
             padding: 8px;
             text-align: center;
             border-radius: 8px;
-            font-size: 14px;
         }
 
         .ganhou {
             background: #ffd700 !important;
-            border: 3px solid #ff0000 !important;
+            border: 2px solid #ff0000 !important;
             transform: scale(1.05);
         }
 
@@ -100,7 +110,6 @@
             text-align: center;
             font-weight: bold;
             color: #ff69b4;
-            margin-top: 10px;
         }
 
         #password-screen {
@@ -114,19 +123,18 @@
             z-index: 10000;
             color: white;
             text-align: center;
-            padding: 20px;
         }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-    <!-- Tela de Segurança com Memória -->
+    <!-- Tela de Segurança -->
     <div id="password-screen">
         <h2>TERNOS DE GRUPO MÁGICOS</h2>
-        <p>Acesso restrito. Digite a senha:</p>
+        <p>Digite a senha para acessar:</p>
         <input type="password" id="entry-pass">
         <br><br>
-        <button class="btn" style="background:#ff69b4; color:white;" onclick="validarSenha()">ENTRAR</button>
+        <button class="btn" style="background:#ff69b4; color:white; flex:none; width:150px;" onclick="validarSenha()">ENTRAR</button>
     </div>
 
     <!-- Conteúdo Principal -->
@@ -148,30 +156,32 @@
 
         <div class="input-box" style="background:#f9f9f9;">
             <h3 style="margin-top:0; color:#6a0dad;">CONFERIDOR</h3>
-            <div style="display:flex; justify-content:center; gap:5px; flex-wrap:wrap;">
-                <input type="number" class="res" min="1" max="25" style="width:40px;">
-                <input type="number" class="res" min="1" max="25" style="width:40px;">
-                <input type="number" class="res" min="1" max="25" style="width:40px;">
-                <input type="number" class="res" min="1" max="25" style="width:40px;">
-                <input type="number" class="res" min="1" max="25" style="width:40px;">
+            <div style="display:flex; justify-content:center; gap:5px; margin-bottom: 15px;">
+                <input type="number" class="res" min="1" max="25" style="width:45px; height: 40px;">
+                <input type="number" class="res" min="1" max="25" style="width:45px; height: 40px;">
+                <input type="number" class="res" min="1" max="25" style="width:45px; height: 40px;">
+                <input type="number" class="res" min="1" max="25" style="width:45px; height: 40px;">
+                <input type="number" class="res" min="1" max="25" style="width:45px; height: 40px;">
             </div>
-            <button class="btn btn-check" onclick="conferir()">CONFERIR MEUS TERNOS</button>
+            
+            <!-- Botões Simétricos -->
+            <div class="button-group">
+                <button class="btn btn-check" onclick="conferir()">CONFERIR TERNOS</button>
+                <button class="btn btn-clear" onclick="limparTudo()">LIMPAR TUDO</button>
+            </div>
         </div>
 
         <div class="footer-text">FEITO POR GUINHO LOTOFACIL</div>
     </div>
 
     <script>
-        // Memória do Dispositivo
-        window.onload = function() {
-            if (localStorage.getItem('acesso_liberado') === 'true') {
-                liberarSite();
-            }
+        // Memória de Acesso
+        window.onload = () => {
+            if (localStorage.getItem('acesso_liberado') === 'true') liberarSite();
         };
 
         function validarSenha() {
-            const senha = document.getElementById('entry-pass').value;
-            if (senha === "TERNOSDEGRUPOSMAGICOS") {
+            if (document.getElementById('entry-pass').value === "TERNOSDEGRUPOSMAGICOS") {
                 localStorage.setItem('acesso_liberado', 'true');
                 liberarSite();
             } else { alert("Senha Incorreta!"); }
@@ -182,7 +192,7 @@
             document.getElementById('main-content').style.display = 'flex';
         }
 
-        // Bloqueio de Inspeção
+        // Segurança
         document.onkeydown = (e) => { if(e.keyCode == 123 || (e.ctrlKey && e.keyCode == 85)) return false; };
 
         let jogosAtuais = [];
@@ -222,9 +232,8 @@
         }
 
         function conferir() {
-            const inputs = document.querySelectorAll('.res');
-            const res = Array.from(inputs).map(i => parseInt(i.value)).filter(v => !isNaN(v));
-            if (res.length < 5) return alert("Preencha o resultado!");
+            const res = Array.from(document.querySelectorAll('.res')).map(i => parseInt(i.value)).filter(v => !isNaN(v));
+            if (res.length < 5) return alert("Preencha o resultado completo!");
 
             let premiados = [];
             jogosAtuais.forEach((jogo, i) => {
@@ -235,29 +244,30 @@
             if (premiados.length > 0) alert("🔥 PARABÉNS! " + premiados.length + " TERNO(S) PREMIADO(S)!");
         }
 
-        // NOVA FUNÇÃO DE COMPARTILHAMENTO FORMATADA
-        function compartilhar() {
-            if (jogosAtuais.length === 0) return;
+        // FUNÇÃO LIMPAR TUDO
+        function limparTudo() {
+            document.getElementById('input-grupo').value = "";
+            document.getElementById('puxada-txt').innerText = "";
+            document.getElementById('grid-ternos').innerHTML = "";
+            document.querySelectorAll('.res').forEach(input => input.value = "");
+            document.getElementById('btn-share').style.display = 'none';
+            jogosAtuais = [];
+            puxadaAtual = [];
+            alert("Campos limpos com sucesso!");
+        }
 
+        function compartilhar() {
             let texto = "Ternos De Grupos Magicos Do Guinho. Grupos Escolhidos: (" + puxadaAtual.join(", ") + ")\n\n";
-            
-            // Loop para criar os 5 blocos de 7 jogos cada
-            for (let bloco = 0; bloco < 5; bloco++) {
-                texto += "Grupo " + (bloco + 1) + "\n";
+            for (let b = 0; b < 5; b++) {
+                texto += "Grupo " + (b + 1) + "\n";
                 for (let i = 0; i < 7; i++) {
-                    const indexJogo = (bloco * 7) + i;
-                    const jogo = jogosAtuais[indexJogo];
+                    const jogo = jogosAtuais[(b * 7) + i];
                     texto += jogo.join("-") + "\n";
                 }
-                texto += "\n"; // Espaço entre os blocos
+                texto += "\n";
             }
-
-            if (navigator.share) {
-                navigator.share({ title: 'Ternos do Guinho', text: texto });
-            } else {
-                navigator.clipboard.writeText(texto);
-                alert("Texto formatado copiado com sucesso!");
-            }
+            if (navigator.share) { navigator.share({ title: 'Ternos do Guinho', text: texto }); }
+            else { navigator.clipboard.writeText(texto); alert("Copiado!"); }
         }
     </script>
 </body>
