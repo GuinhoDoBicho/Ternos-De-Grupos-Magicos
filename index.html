@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TERNOS DE GRUPO MÁGICOS DO GUINHO</title>
     <style>
-        /* Estilização: Fundo Roxo com Rosa e Simetria */
+        /* Estilização: Fundo Roxo com Rosa */
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
             background: linear-gradient(135deg, #4b0082, #ff69b4);
@@ -45,7 +45,7 @@
 
         input[type="number"], input[type="password"] {
             width: 80%;
-            max-width: 150px;
+            max-width: 180px;
             font-size: 20px;
             text-align: center;
             border: 2px solid #6a0dad;
@@ -53,7 +53,6 @@
             padding: 8px;
         }
 
-        /* Estrutura de Botões Simétricos */
         .button-group {
             display: flex;
             gap: 10px;
@@ -67,13 +66,15 @@
             font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
-            flex: 1; /* Garante que ambos tenham o mesmo tamanho */
+            flex: 1;
             font-size: 14px;
+            text-transform: uppercase;
         }
 
         .btn-share { background-color: #25d366; color: white; margin-bottom: 5px; flex: none; width: 100%; }
         .btn-check { background-color: #4b0082; color: white; }
-        .btn-clear { background-color: #ff1493; color: white; } /* Rosa Choque para o Limpar */
+        .btn-clear { background-color: #ff1493; color: white; }
+        .btn-demo { background-color: #ffd700; color: #333; margin-top: 15px; flex: none; width: 220px; }
 
         .grid-ternos {
             display: grid;
@@ -124,24 +125,40 @@
             color: white;
             text-align: center;
         }
+
+        .demo-badge {
+            background: #ffd700;
+            color: #000;
+            padding: 5px;
+            font-size: 12px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: none;
+        }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-    <!-- Tela de Segurança -->
     <div id="password-screen">
-        <h2>TERNOS DE GRUPO MÁGICOS</h2>
-        <p>Digite a senha para acessar:</p>
+        <header style="background: transparent; margin-bottom: 20px;">
+            <h2 style="margin:0;">TERNOS DE GRUPO MÁGICOS</h2>
+        </header>
+        <p>Digite a senha para acesso ilimitado:</p>
         <input type="password" id="entry-pass">
-        <br><br>
-        <button class="btn" style="background:#ff69b4; color:white; flex:none; width:150px;" onclick="validarSenha()">ENTRAR</button>
+        <button class="btn" style="background:#ff69b4; color:white; flex:none; width:180px; margin-top:10px;" onclick="validarSenha()">ENTRAR</button>
+        
+        <hr style="width: 200px; border: 0.5px solid rgba(255,255,255,0.2); margin: 20px 0;">
+        
+        <button class="btn btn-demo" onclick="acessoDemo()">VENHA FAZER SEU TESTE AQUI</button>
+        <p style="font-size: 12px; margin-top: 10px; opacity: 0.8;">(Limite de 3 testes grátis)</p>
     </div>
 
-    <!-- Conteúdo Principal -->
     <div class="container" id="main-content" style="display:none;">
         <header>
             <h2 style="margin:0;">TERNOS DE GRUPO MÁGICOS DO GUINHO</h2>
         </header>
+
+        <div id="demo-indicator" class="demo-badge">MODO DEMO ATIVO: <span id="demo-count">0</span>/3 TESTES USADOS</div>
 
         <div class="input-box">
             <label style="display:block; font-weight:bold; margin-bottom: 8px;">ESCOLHA O GRUPO DA CABEÇA:</label>
@@ -163,8 +180,6 @@
                 <input type="number" class="res" min="1" max="25" style="width:45px; height: 40px;">
                 <input type="number" class="res" min="1" max="25" style="width:45px; height: 40px;">
             </div>
-            
-            <!-- Botões Simétricos -->
             <div class="button-group">
                 <button class="btn btn-check" onclick="conferir()">CONFERIR TERNOS</button>
                 <button class="btn btn-clear" onclick="limparTudo()">LIMPAR TUDO</button>
@@ -175,32 +190,69 @@
     </div>
 
     <script>
-        // Memória de Acesso
+        let isDemo = false;
+        let jogosAtuais = [];
+        let puxadaAtual = [];
+
+        // Memória de Acesso Ilimitado
         window.onload = () => {
-            if (localStorage.getItem('acesso_liberado') === 'true') liberarSite();
+            if (localStorage.getItem('acesso_liberado') === 'true') {
+                liberarSite(false);
+            }
         };
 
         function validarSenha() {
             if (document.getElementById('entry-pass').value === "TERNOSDEGRUPOSMAGICOS") {
                 localStorage.setItem('acesso_liberado', 'true');
-                liberarSite();
+                liberarSite(false);
             } else { alert("Senha Incorreta!"); }
         }
 
-        function liberarSite() {
+        // Função de Acesso Demo
+        function acessoDemo() {
+            let usos = parseInt(localStorage.getItem('demo_usos') || "0");
+            if (usos >= 3) {
+                alert("ADQUIRA A VERSÃO COMPLETA COM GUINHO!");
+                return;
+            }
+            isDemo = true;
+            liberarSite(true);
+        }
+
+        function liberarSite(demo) {
             document.getElementById('password-screen').style.display = 'none';
             document.getElementById('main-content').style.display = 'flex';
+            if (demo) {
+                document.getElementById('demo-indicator').style.display = 'block';
+                atualizarContadorDemo();
+            }
+        }
+
+        function atualizarContadorDemo() {
+            let usos = localStorage.getItem('demo_usos') || "0";
+            document.getElementById('demo-count').innerText = usos;
         }
 
         // Segurança
         document.onkeydown = (e) => { if(e.keyCode == 123 || (e.ctrlKey && e.keyCode == 85)) return false; };
 
-        let jogosAtuais = [];
-        let puxadaAtual = [];
-
         function gerarJogos() {
             const n = parseInt(document.getElementById('input-grupo').value);
             if (!n || n < 1 || n > 25) return;
+
+            // Verificação de Limite Demo
+            if (isDemo) {
+                let usos = parseInt(localStorage.getItem('demo_usos') || "0");
+                if (usos >= 3) {
+                    alert("ADQUIRA A VERSÃO COMPLETA COM GUINHO!");
+                    limparTudo();
+                    return;
+                }
+                // Contabiliza o uso apenas se for uma nova geração
+                usos++;
+                localStorage.setItem('demo_usos', usos.toString());
+                atualizarContadorDemo();
+            }
 
             puxadaAtual = [(n+5)%25||25, (n+10)%25||25, (n+15)%25||25, (n+2)%25||25, (n+7)%25||25, (n+12)%25||25, (n+20)%25||25];
             document.getElementById('puxada-txt').innerText = "PUXADA: " + puxadaAtual.join(" - ");
@@ -234,17 +286,14 @@
         function conferir() {
             const res = Array.from(document.querySelectorAll('.res')).map(i => parseInt(i.value)).filter(v => !isNaN(v));
             if (res.length < 5) return alert("Preencha o resultado completo!");
-
             let premiados = [];
             jogosAtuais.forEach((jogo, i) => {
                 if (jogo.filter(g => res.includes(g)).length === 3) premiados.push(i);
             });
-
             renderizarGrid(premiados);
             if (premiados.length > 0) alert("🔥 PARABÉNS! " + premiados.length + " TERNO(S) PREMIADO(S)!");
         }
 
-        // FUNÇÃO LIMPAR TUDO
         function limparTudo() {
             document.getElementById('input-grupo').value = "";
             document.getElementById('puxada-txt').innerText = "";
@@ -253,7 +302,6 @@
             document.getElementById('btn-share').style.display = 'none';
             jogosAtuais = [];
             puxadaAtual = [];
-            alert("Campos limpos com sucesso!");
         }
 
         function compartilhar() {
@@ -262,7 +310,7 @@
                 texto += "Grupo " + (b + 1) + "\n";
                 for (let i = 0; i < 7; i++) {
                     const jogo = jogosAtuais[(b * 7) + i];
-                    texto += jogo.join("-") + "\n";
+                    if(jogo) texto += jogo.join("-") + "\n";
                 }
                 texto += "\n";
             }
